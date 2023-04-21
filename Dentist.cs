@@ -133,6 +133,35 @@ namespace DentistApp
                 return dentists;
             }
         }
+
+        public void DeleteDentist(SqlConnection myConnection, string name)
+        {
+            string deleteOne = "DELETE FROM Dentist WHERE Name = @personDelete;";
+
+
+            SqlCommand sqlCommand = new SqlCommand(deleteOne, myConnection);
+            myConnection.Open();
+
+            SqlParameter sqlParameter = new SqlParameter
+            {
+                ParameterName = "@personDelete",
+                Value = name,
+                SqlDbType = System.Data.SqlDbType.NVarChar
+            };
+            sqlCommand.Parameters.Add(sqlParameter);
+
+            int numberOfRows = sqlCommand.ExecuteNonQuery();
+            //NOTICE: Go back to previous cases, and make a change!
+            if (numberOfRows > 0)
+                Console.WriteLine("Successfully removed information.");
+            else if (numberOfRows == 0)
+                Console.WriteLine("No such employee in the company.");
+
+            myConnection.Close();
+
+        }
+
+        
     }
 }
 

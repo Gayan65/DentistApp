@@ -128,7 +128,7 @@ do
     //    //modify dentist method
     //}
 
-    else if (choice.Equals(4))
+    else if (choice.Equals(5))
     {
         Console.Clear();
         Console.WriteLine("CHOICE : R E M O V E    D E N T I S T");
@@ -141,6 +141,7 @@ do
             name = Console.ReadLine();
         }
         //delete dentist method;
+        dentistObj.DeleteDentist(myConnection, name);
     }
 
     else
