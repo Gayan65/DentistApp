@@ -29,6 +29,7 @@ do
     Console.WriteLine();
     Console.WriteLine("Enter 1 if you want to SHOW ALL.");
     Console.WriteLine("Enter 2 if you want to ADD A NEW DENTIST.");
+    Console.WriteLine("Enter 3 if you want to FIND DENTIST.");
     Console.WriteLine("Enter 3 if you want to MODIFY INFORMATION.");
     Console.WriteLine("Enter 4 if you want to REMOVE INFORMATION.");
     Console.WriteLine("Enter 5 if you want to DO NOTHING.");
@@ -83,12 +84,14 @@ do
             mobile = Console.ReadLine();
         }
         //add member method
+        dentistObj = new Dentist(null, name, mobile);
+        dentistObj.InsertDentist(myConnection, dentistObj);
     }
 
-    else if (choice.Equals(3))
+    else if(choice.Equals(3))
     {
         Console.Clear();
-        Console.WriteLine("CHOICE : M O D I F Y    D E N T I S T");
+        Console.WriteLine("CHOICE : F I N D    D E N T I S T");
         Console.WriteLine();
         Console.Write("Enter the Name of the dentist you looking for : ");
         name = Console.ReadLine();
@@ -97,8 +100,33 @@ do
             Console.Write("Name :");
             name = Console.ReadLine();
         }
-        //modify dentist method
+        //FIND dentist method
+        List<Dentist> dentistList = new List<Dentist>();
+        Console.WriteLine();
+        Console.WriteLine("------------------------------------------------------------");
+        Console.WriteLine("ID   | NAME OF THE DENTIST       | MOBILE      ");
+        Console.WriteLine("------------------------------------------------------------");
+        dentistList = dentistObj.FindDentist(myConnection, name);
+       
+        foreach (var item in dentistList)
+        {
+            Console.WriteLine(String.Format("{0, -4} | {1, -25} | {2, -15}", item.Id, item.Name, item.TelNum));
+        }
     }
+    //else if (choice.Equals(3))
+    //{
+    //    Console.Clear();
+    //    Console.WriteLine("CHOICE : M O D I F Y    D E N T I S T");
+    //    Console.WriteLine();
+    //    Console.Write("Enter the Name of the dentist you looking for : ");
+    //    name = Console.ReadLine();
+    //    while (String.IsNullOrWhiteSpace(name) || nameFormat.IsMatch(name))
+    //    {
+    //        Console.Write("Name :");
+    //        name = Console.ReadLine();
+    //    }
+    //    //modify dentist method
+    //}
 
     else if (choice.Equals(4))
     {
