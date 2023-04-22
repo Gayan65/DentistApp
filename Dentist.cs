@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace DentistApp
 {
@@ -136,28 +137,83 @@ namespace DentistApp
 
         public void DeleteDentist(SqlConnection myConnection, string name)
         {
-            string deleteOne = "DELETE FROM Dentist WHERE Name = @personDelete;";
 
 
-            SqlCommand sqlCommand = new SqlCommand(deleteOne, myConnection);
-            myConnection.Open();
-
-            SqlParameter sqlParameter = new SqlParameter
+            try
             {
-                ParameterName = "@personDelete",
-                Value = name,
-                SqlDbType = System.Data.SqlDbType.NVarChar
-            };
-            sqlCommand.Parameters.Add(sqlParameter);
+                string findOne = "SELECT * FROM Dentist WHERE Name LIKE '%'+@personOfIterest+'%'";
 
-            int numberOfRows = sqlCommand.ExecuteNonQuery();
-            //NOTICE: Go back to previous cases, and make a change!
-            if (numberOfRows > 0)
-                Console.WriteLine("Successfully removed information.");
-            else if (numberOfRows == 0)
-                Console.WriteLine("No such employee in the company.");
+                SqlCommand sqlCommandOne = new SqlCommand(findOne, myConnection);
+                myConnection.Open();
 
-            myConnection.Close();
+                SqlParameter sqlParameterOne = new SqlParameter
+                {
+                    ParameterName = "@personOfIterest",
+                    Value = name,
+                    SqlDbType = System.Data.SqlDbType.NVarChar
+                };
+                sqlCommandOne.Parameters.Add(sqlParameterOne);
+
+                //ARE THERE ANY ?
+
+                using (SqlDataReader sqlDataReder = sqlCommandOne.ExecuteReader())
+                {
+                    Regex nameFormat = new Regex(@"[^a-zA-Z\s]");
+                   
+                    if (sqlDataReder.HasRows)
+                    {
+                        
+                        while (sqlDataReder.Read())
+                        {
+                            Console.WriteLine("Id : {0}, Name {1}, TeleNu : {2}", sqlDataReder[0], sqlDataReder[1], sqlDataReder[2]);
+                        }
+                        sqlDataReder.Close();
+                        Console.Write("Give the right name to be deleted : ");
+                        string newName = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newName))
+                        {
+                            while (nameFormat.IsMatch(newName) || string.IsNullOrEmpty(newName))
+                            {
+                                Console.Write("Invalid Name format : ");
+                                newName = Console.ReadLine();
+                            }
+
+                            string deleteOne = "DELETE FROM Dentist WHERE Name = @personDelete;";
+
+                            SqlCommand sqlCommand = new SqlCommand(deleteOne, myConnection);
+       
+                            SqlParameter sqlParameter = new SqlParameter
+                            {
+                                ParameterName = "@personDelete",
+                                Value = newName,
+                                SqlDbType = System.Data.SqlDbType.NVarChar
+                            };
+                            sqlCommand.Parameters.Add(sqlParameter);
+
+                            int numberOfRows = sqlCommand.ExecuteNonQuery();
+                            //NOTICE: Go back to previous cases, and make a change!
+                            if (numberOfRows > 0)
+                                Console.WriteLine("Successfully removed information.");
+                            else if (numberOfRows == 0)
+                                Console.WriteLine("No such employee in the company.");
+                            myConnection.Close();
+                        }
+                        myConnection.Close();
+                    }
+                    else
+                    {
+                        Console.WriteLine("No such an employee");
+                        myConnection.Close();
+                    }
+                }
+              }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("WWWHAT?");
+                Console.WriteLine(ex.Message);
+                myConnection.Close();
+            }
 
         }
 
