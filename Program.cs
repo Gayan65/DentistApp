@@ -113,20 +113,21 @@ do
             Console.WriteLine(String.Format("{0, -4} | {1, -25} | {2, -15}", item.Id, item.Name, item.TelNum));
         }
     }
-    //else if (choice.Equals(3))
-    //{
-    //    Console.Clear();
-    //    Console.WriteLine("CHOICE : M O D I F Y    D E N T I S T");
-    //    Console.WriteLine();
-    //    Console.Write("Enter the Name of the dentist you looking for : ");
-    //    name = Console.ReadLine();
-    //    while (String.IsNullOrWhiteSpace(name) || nameFormat.IsMatch(name))
-    //    {
-    //        Console.Write("Name :");
-    //        name = Console.ReadLine();
-    //    }
-    //    //modify dentist method
-    //}
+    else if (choice.Equals(4))
+    {
+        Console.Clear();
+        Console.WriteLine("CHOICE : M O D I F Y    D E N T I S T");
+        Console.WriteLine();
+        Console.Write("Enter the Name of the dentist you looking for : ");
+        name = Console.ReadLine();
+        while (String.IsNullOrWhiteSpace(name) || nameFormat.IsMatch(name))
+        {
+            Console.Write("Name :");
+            name = Console.ReadLine();
+        }
+        //modify dentist method
+        dentistObj.UpdateDentist(myConnection, name); 
+    }
 
     else if (choice.Equals(5))
     {

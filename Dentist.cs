@@ -217,6 +217,138 @@ namespace DentistApp
 
         }
 
+        public void UpdateDentist(SqlConnection myConnection, string name)
+        {
+            bool namechanged = false;
+            bool teleNumChanged = false;
+            try
+            {
+                string findOne = "SELECT * FROM Dentist WHERE Name LIKE '%'+@personOfIterest+'%'";
+
+                SqlCommand sqlCommandOne = new SqlCommand(findOne, myConnection);
+                myConnection.Open();
+
+                SqlParameter sqlParameterOne = new SqlParameter
+                {
+                    ParameterName = "@personOfIterest",
+                    Value = name,
+                    SqlDbType = System.Data.SqlDbType.NVarChar
+                };
+                sqlCommandOne.Parameters.Add(sqlParameterOne);
+
+                //ARE THERE ANY ?
+
+                using (SqlDataReader sqlDataReder = sqlCommandOne.ExecuteReader())
+                {
+                    Regex nameFormat = new Regex(@"[^a-zA-Z\s]");
+                    Regex mobileFormat = new Regex("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$");
+
+                    if (sqlDataReder.HasRows)
+                    {
+
+                        while (sqlDataReder.Read())
+                        {
+                            Console.WriteLine("Id : {0}, Name {1}, TeleNu : {2}", sqlDataReder[0], sqlDataReder[1], sqlDataReder[2]);
+                        }
+                        sqlDataReder.Close();
+                        Console.WriteLine("Enter the right name to be modified find in the lis above.");
+                        Console.WriteLine("Leave the fied blank which is not being modified.");
+                        Console.Write("Select and type the right name to be modified : ");
+                        string newName = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newName))
+                        {
+                            while (nameFormat.IsMatch(newName) || string.IsNullOrEmpty(newName))
+                            {
+                                Console.Write("Invalid Name format : ");
+                                newName = Console.ReadLine();
+                            }
+
+                            Console.WriteLine("Enter the new name : ");
+                            string changedName = Console.ReadLine();
+
+                            if(String.IsNullOrEmpty(changedName))
+                            {
+                                newName = newName;
+                                namechanged = false;
+                            }
+                            else
+                            {
+                                while (nameFormat.IsMatch(changedName) || string.IsNullOrEmpty(changedName))
+                                {
+                                    Console.Write("Invalid Name format : ");
+                                    changedName = Console.ReadLine();
+                                }
+                                newName = changedName;
+                                namechanged= true;
+
+                            }
+
+                            Console.WriteLine("Enter the new telephone number : ");
+                            string changedTeleNUm = Console.ReadLine();
+
+                            if (String.IsNullOrEmpty(changedTeleNUm))
+                            {
+                               teleNumChanged = false;
+                            }
+                            else
+                            {
+                                while (mobileFormat.IsMatch(changedTeleNUm) || string.IsNullOrEmpty(changedTeleNUm))
+                                {
+                                    Console.Write("Invalid mobile number format : ");
+                                    changedTeleNUm = Console.ReadLine();
+                                }
+                                teleNumChanged = true;
+                            }
+
+
+
+                            string updateOne = "UPDATE Dentist SET TelNum=@newTelNum WHERE Name=@dName";
+
+                            SqlCommand sqlCommand = new SqlCommand(updateOne, myConnection);
+
+                            SqlParameter sqlParameter = new SqlParameter
+                            {
+                                ParameterName = "@dName",
+                                Value = newName,
+                                SqlDbType = System.Data.SqlDbType.NVarChar
+                            };
+                            sqlCommand.Parameters.Add(sqlParameter);
+
+                            sqlParameter = new SqlParameter
+                            {
+                                ParameterName = "@newTelNum",
+                                Value = changedTeleNUm,
+                                SqlDbType = System.Data.SqlDbType.NVarChar
+                            };
+                            sqlCommand.Parameters.Add(sqlParameter);
+
+
+
+                            int numberOfRows = sqlCommand.ExecuteNonQuery();
+                            //NOTICE: Go back to previous cases, and make a change!
+                            if (numberOfRows > 0)
+                                Console.WriteLine("Successfully modified information.");
+                            else if (numberOfRows == 0)
+                                Console.WriteLine("No such employee in the company.");
+                            myConnection.Close();
+                        }
+                        myConnection.Close();
+                    }
+                    else
+                    {
+                        Console.WriteLine("No such an employee");
+                        myConnection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("WWWHAT?");
+                Console.WriteLine(ex.Message);
+                myConnection.Close();
+            }
+        }
         
     }
 }
