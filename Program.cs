@@ -10,7 +10,7 @@ bool addMember;
 int choice;
 string name, mobile;
 Regex nameFormat = new Regex(@"[^a-zA-Z\s]");
-Regex mobileFormat = new Regex("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$");
+Regex mobileFormat = new Regex("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{7}$");
 Dentist dentistObj = new Dentist(null, null, null);
 
 //CONNECTION STRING
@@ -25,14 +25,13 @@ do
     Console.WriteLine();
     Console.WriteLine("WELCOME, DENTIST APPLICATION SYSTEM");
     Console.WriteLine();
-    Console.WriteLine("Select an option 1...4");
+    Console.WriteLine("Select an option 1...5");
     Console.WriteLine();
     Console.WriteLine("Enter 1 if you want to SHOW ALL.");
     Console.WriteLine("Enter 2 if you want to ADD A NEW DENTIST.");
     Console.WriteLine("Enter 3 if you want to FIND DENTIST.");
-    Console.WriteLine("Enter 3 if you want to MODIFY INFORMATION.");
-    Console.WriteLine("Enter 4 if you want to REMOVE INFORMATION.");
-    Console.WriteLine("Enter 5 if you want to DO NOTHING.");
+    Console.WriteLine("Enter 4 if you want to MODIFY INFORMATION.");
+    Console.WriteLine("Enter 5 if you want to REMOVE INFORMATION.");
     Console.WriteLine();
     Console.Write("Make your choice : ");
     string recieved = Console.ReadLine();

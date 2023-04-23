@@ -162,12 +162,16 @@ namespace DentistApp
                    
                     if (sqlDataReder.HasRows)
                     {
+                        Console.WriteLine("------------------------------------------------------------");
+                        Console.WriteLine("ID   | NAME OF THE DENTIST       | MOBILE      ");
+                        Console.WriteLine("------------------------------------------------------------");
                         
                         while (sqlDataReder.Read())
                         {
-                            Console.WriteLine("Id : {0}, Name {1}, TeleNu : {2}", sqlDataReder[0], sqlDataReder[1], sqlDataReder[2]);
+                            Console.WriteLine(String.Format("{0, -4} | {1, -25} | {2, -15}", sqlDataReder[0], sqlDataReder[1], sqlDataReder[2]));
                         }
                         sqlDataReder.Close();
+                        Console.WriteLine();
                         Console.Write("Give the right name to be deleted : ");
                         string newName = Console.ReadLine();
                         if (!string.IsNullOrEmpty(newName))
@@ -209,8 +213,6 @@ namespace DentistApp
               }
             catch (Exception ex)
             {
-
-                Console.WriteLine("WWWHAT?");
                 Console.WriteLine(ex.Message);
                 myConnection.Close();
             }
@@ -241,17 +243,20 @@ namespace DentistApp
                 using (SqlDataReader sqlDataReder = sqlCommandOne.ExecuteReader())
                 {
                     Regex nameFormat = new Regex(@"[^a-zA-Z\s]");
-                    Regex mobileFormat = new Regex("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$");
+                    Regex mobileFormat = new Regex("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{7}$");
 
                     if (sqlDataReder.HasRows)
                     {
-
+                        Console.WriteLine("------------------------------------------------------------");
+                        Console.WriteLine("ID   | NAME OF THE DENTIST       | MOBILE      ");
+                        Console.WriteLine("------------------------------------------------------------");
                         while (sqlDataReder.Read())
                         {
-                            Console.WriteLine("Id : {0}, Name {1}, TeleNu : {2}", sqlDataReder[0], sqlDataReder[1], sqlDataReder[2]);
+                            Console.WriteLine(String.Format("{0, -4} | {1, -25} | {2, -15}", sqlDataReder[0], sqlDataReder[1], sqlDataReder[2]));
                         }
                         sqlDataReder.Close();
-                        Console.WriteLine("Enter the right name to be modified find in the lis above.");
+                        Console.WriteLine();
+                        Console.WriteLine("Enter the right name to be modified find in the list above.");
                         Console.WriteLine("Leave the fied blank which is not being modified.");
                         Console.Write("Select and type the right name to be modified : ");
                         string newName = Console.ReadLine();
@@ -263,27 +268,7 @@ namespace DentistApp
                                 newName = Console.ReadLine();
                             }
 
-                            Console.WriteLine("Enter the new name : ");
-                            string changedName = Console.ReadLine();
-
-                            if(String.IsNullOrEmpty(changedName))
-                            {
-                                newName = newName;
-                                namechanged = false;
-                            }
-                            else
-                            {
-                                while (nameFormat.IsMatch(changedName) || string.IsNullOrEmpty(changedName))
-                                {
-                                    Console.Write("Invalid Name format : ");
-                                    changedName = Console.ReadLine();
-                                }
-                                newName = changedName;
-                                namechanged= true;
-
-                            }
-
-                            Console.WriteLine("Enter the new telephone number : ");
+                            Console.Write("Enter the new telephone number : ");
                             string changedTeleNUm = Console.ReadLine();
 
                             if (String.IsNullOrEmpty(changedTeleNUm))
@@ -292,7 +277,7 @@ namespace DentistApp
                             }
                             else
                             {
-                                while (mobileFormat.IsMatch(changedTeleNUm) || string.IsNullOrEmpty(changedTeleNUm))
+                                while (!mobileFormat.IsMatch(changedTeleNUm) || string.IsNullOrEmpty(changedTeleNUm))
                                 {
                                     Console.Write("Invalid mobile number format : ");
                                     changedTeleNUm = Console.ReadLine();
@@ -300,37 +285,41 @@ namespace DentistApp
                                 teleNumChanged = true;
                             }
 
-
-
-                            string updateOne = "UPDATE Dentist SET TelNum=@newTelNum WHERE Name=@dName";
-
-                            SqlCommand sqlCommand = new SqlCommand(updateOne, myConnection);
-
-                            SqlParameter sqlParameter = new SqlParameter
+                            if (teleNumChanged)
                             {
-                                ParameterName = "@dName",
-                                Value = newName,
-                                SqlDbType = System.Data.SqlDbType.NVarChar
-                            };
-                            sqlCommand.Parameters.Add(sqlParameter);
+                                string updateOne = "UPDATE Dentist SET TelNum=@newTelNum WHERE Name=@dName";
 
-                            sqlParameter = new SqlParameter
+                                SqlCommand sqlCommand = new SqlCommand(updateOne, myConnection);
+
+                                SqlParameter sqlParameter = new SqlParameter
+                                {
+                                    ParameterName = "@dName",
+                                    Value = newName,
+                                    SqlDbType = System.Data.SqlDbType.NVarChar
+                                };
+                                sqlCommand.Parameters.Add(sqlParameter);
+
+                                sqlParameter = new SqlParameter
+                                {
+                                    ParameterName = "@newTelNum",
+                                    Value = changedTeleNUm,
+                                    SqlDbType = System.Data.SqlDbType.NVarChar
+                                };
+                                sqlCommand.Parameters.Add(sqlParameter);
+                                int numberOfRows = sqlCommand.ExecuteNonQuery();
+                                //NOTICE: Go back to previous cases, and make a change!
+                                if (numberOfRows > 0)
+                                    Console.WriteLine("Successfully modified information.");
+                                else if (numberOfRows == 0)
+                                    Console.WriteLine("No such employee in the company. Recheck your input....");
+                                myConnection.Close();
+                            }
+                            else
                             {
-                                ParameterName = "@newTelNum",
-                                Value = changedTeleNUm,
-                                SqlDbType = System.Data.SqlDbType.NVarChar
-                            };
-                            sqlCommand.Parameters.Add(sqlParameter);
-
-
-
-                            int numberOfRows = sqlCommand.ExecuteNonQuery();
-                            //NOTICE: Go back to previous cases, and make a change!
-                            if (numberOfRows > 0)
-                                Console.WriteLine("Successfully modified information.");
-                            else if (numberOfRows == 0)
-                                Console.WriteLine("No such employee in the company.");
-                            myConnection.Close();
+                                Console.WriteLine("You didnot change anything...");
+                                myConnection.Close();
+                            }
+  
                         }
                         myConnection.Close();
                     }
@@ -343,8 +332,6 @@ namespace DentistApp
             }
             catch (Exception ex)
             {
-
-                Console.WriteLine("WWWHAT?");
                 Console.WriteLine(ex.Message);
                 myConnection.Close();
             }
